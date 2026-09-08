@@ -5,7 +5,11 @@
   uniform float uTime; //time in sec
   out vec3 vColor;
 
-  vec3 scale(in vec3 position, in float scaleX, in float scaleY);
+  vec3 scale(in vec3 position, in float sx, in float sy);
+  vec3 rotate(in vec3 position, in float angle);
+  vec3 translate(in vec3 position, in float tx, in float ty);
+  vec3 skew(in vec3 position, in float shx, in float shy);
+  vec3 mirror(in vec3 position, in float angle);
 
   vec3 mPosition;
 
@@ -19,10 +23,26 @@
     }
   }
 
-  vec3 scale(in vec3 position, in float scaleX, in float scaleY){
+  vec3 scale(in vec3 position, in float sx, in float sy){
     return mat3x3(
-      scaleX, 0, 0,
-      0, scaleY, 0,
-      0, 0,      1
+      sx, 0, 0,
+      0, sy, 0,
+      0, 0, 1
+    ) * position;
+  }
+
+  vec3 rotate(in vec3 position, in float angle){
+      return mat3x3(
+      cos(angle), sin(angle), 0,
+      -sin(angle), cos(angle), 0,
+      0, 0, 1
+    ) * position;
+  }
+
+    vec3 translate(in vec3 position, in float tx, in float ty){
+    return mat3x3(
+      1, 0, 0,
+      0, 1, 0,
+      tx, ty, 1
     ) * position;
   }
