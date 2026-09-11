@@ -53,7 +53,6 @@
     );
   }
  
-  //doesn't work?
   mat4x4 translate(in float tx, in float ty){
     return mat4x4(
       1, 0, 0, 0,
