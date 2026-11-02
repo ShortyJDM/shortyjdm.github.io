@@ -77,3 +77,64 @@ function createCylinder(segments = 64, uRepeat = 3) {
     indices: new Uint16Array(indices)
   };
 }
+
+function createTorus(r, R ,uSteps, vSteps){
+    var pos = new Array();
+    var nrm = new Array();
+    var idx = new Array();
+    for(let i = 0; i <= vSteps; i++){
+        v = i * 2 * (Math.PI / vSteps); 
+        for(let j = 0; j <= uSteps; j++){
+            u = j * 2 * (Math.PI / uSteps); 
+            const x = (R + r*Math.cos(v)) * Math.cos(u);
+            const y = (R + r*Math.cos(v)) * Math.sin(u);
+            const z = r * Math.sin(v);
+
+            const xn = Math.cos(v) * Math.cos(u);
+            const yn = Math.cos(v) * Math.sin(u);
+            const zn = Math.sin(v);
+
+            pos.push(x, y, z);
+            nrm.push(xn,yn,zn);
+        }
+    }
+
+    for (let i = 0; i < vSteps; i++) {
+        for (let j = 0; j < uSteps; j++) {
+            const k1 = (i * (uSteps + 1)) + j;
+            const k2 = k1 + uSteps + 1;
+            idx.push(k1, k2, k1 + 1);
+            idx.push(k2, k2 + 1, k1 + 1);
+        }
+    }
+
+    return { positions: new Float32Array(pos), normals: new Float32Array(nrm), indices: new Uint16Array(idx) };
+} 
+
+function createSphere(uSteps, vSteps){
+    var pos = new Array();
+    var nrm = new Array();
+    var idx = new Array();
+    for(let i = 0; i <= vSteps; i++){
+        v = i * (Math.PI / vSteps); 
+        for(let j = 0; j <= uSteps; j++){
+            u = j * 2 * (Math.PI / uSteps); 
+            const x = Math.cos(u) * Math.sin(v);
+            const y = Math.cos(v)
+            const z = Math.sin(u) * Math.sin(v);
+            pos.push(x, y, z);
+            nrm.push(x, y, z);
+        }
+    }
+
+    for (let i = 0; i < vSteps; i++) {
+        for (let j = 0; j < uSteps; j++) {
+            const k1 = (i * (uSteps + 1)) + j;
+            const k2 = k1 + uSteps + 1;
+            idx.push(k1, k2, k1 + 1);
+            idx.push(k2, k2 + 1, k1 + 1);
+        }
+    }
+
+    return { positions: new Float32Array(pos), normals: new Float32Array(nrm), indices: new Uint16Array(idx) };
+} 
