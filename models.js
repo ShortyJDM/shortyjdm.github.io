@@ -81,6 +81,8 @@ function createCylinder(segments = 64, uRepeat = 3) {
 function createTorus(r, R ,uSteps, vSteps){
     var pos = new Array();
     var nrm = new Array();
+    var tan = new Array();
+    var tex = new Array();
     var idx = new Array();
     for(let i = 0; i <= vSteps; i++){
         v = i * 2 * (Math.PI / vSteps); 
@@ -108,12 +110,20 @@ function createTorus(r, R ,uSteps, vSteps){
         }
     }
 
-    return { positions: new Float32Array(pos), normals: new Float32Array(nrm), indices: new Uint16Array(idx) };
+    return {
+    positions: new Float32Array(pos),
+    normals: new Float32Array(nrm),
+    tangents: new Float32Array(tan),
+    texCoords: new Float32Array(tex),
+    indices: new Uint16Array(idx)
+  };
 } 
 
 function createSphere(uSteps, vSteps){
     var pos = new Array();
     var nrm = new Array();
+    var tan = new Array();
+    var tex = new Array();
     var idx = new Array();
     for(let i = 0; i <= vSteps; i++){
         v = i * (Math.PI / vSteps); 
@@ -136,5 +146,62 @@ function createSphere(uSteps, vSteps){
         }
     }
 
-    return { positions: new Float32Array(pos), normals: new Float32Array(nrm), indices: new Uint16Array(idx) };
+    return {
+    positions: new Float32Array(pos),
+    normals: new Float32Array(nrm),
+    tangents: new Float32Array(tan),
+    texCoords: new Float32Array(tex),
+    indices: new Uint16Array(idx)
+  };
+} 
+
+function createCone(r, h, uSteps, vSteps){
+    var pos = new Array();
+    var nrm = new Array();
+    var tan = new Array();
+    var tex = new Array();
+    var idx = new Array();
+    for(let i = 0; i <= vSteps; i++){
+        v = i * (1 / vSteps); 
+        for(let j = 0; j <= uSteps; j++){
+            u = j * 2 * (Math.PI / uSteps); 
+            const x = r * (1-v) * Math.cos(u);
+            const y = r * (1-v) * Math.sin(u);
+            const z = h*v;
+            pos.push(x, y, z);
+            const nx = h * Math.cos(u);
+            const ny = h * Math.sin(u);
+            const nz = r;
+            const nc = r*(1-v);
+            
+           
+            nrm.push(nc*nx,nc*ny,nc*nz);
+        }
+    }
+    end = pos.length/3;
+    for (let i = 0; i < vSteps; i++) {
+        for (let j = 0; j < uSteps; j++) {
+            const k1 = (i * (uSteps + 1)) + j;
+            const k2 = k1 + uSteps + 1;
+            idx.push(k1, k2, k1 + 1);
+            idx.push(k2, k2 + 1, k1 + 1);
+        }
+    }
+    
+    pos.push(0,0,0);
+    nrm.push(0,0,1);
+
+
+    for (let i = 0; i <= uSteps; i++){
+        idx.push(end,i,i+1);
+        nrm.push(0,0,1);
+    }
+        
+    return {
+    positions: new Float32Array(pos),
+    normals: new Float32Array(nrm),
+    tangents: new Float32Array(tan),
+    texCoords: new Float32Array(tex),
+    indices: new Uint16Array(idx)
+  };
 } 
