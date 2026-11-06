@@ -206,7 +206,7 @@ function loadVideoTexture(video) {
 const brickTexture = loadTexture("brick.png");
 const normalTexture = loadTexture("texture2.jpg");
 const animatedTexture = document.createElement('video');
-animatedTexture.src = "soldier.gif";
+animatedTexture.src = "soldier.mp4";
 animatedTexture.loop = true;
 animatedTexture.muted = true;
 
