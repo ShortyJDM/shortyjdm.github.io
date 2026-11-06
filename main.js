@@ -191,24 +191,32 @@ function loadVideoTexture(video) {
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([128, 128, 255, 255]));
-    
-
+  
+  /*
   gl.bindTexture(gl.TEXTURE_2D, texture);
-  //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);  // images start at the top row, texture coordinates at the bottom
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);  // images start at the top row, texture coordinates at the bottom
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
-  //gl.generateMipmap(gl.TEXTURE_2D);
-  //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-
+  gl.generateMipmap(gl.TEXTURE_2D);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+  */
 
   return texture;
 }
 
+//Animated texture done with help from the moxilla documentation (https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Animating_textures_in_WebGL)
+function updateVideoTexture(texture){
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
+}
+
 const brickTexture = loadTexture("brick.png");
 const normalTexture = loadTexture("texture2.jpg");
-const animatedTexture = document.createElement('video');
-animatedTexture.src = "soldier.mp4";
-animatedTexture.loop = true;
-animatedTexture.muted = true;
+const animatedTexture = loadTexture();
+const video = document.createElement('video');
+video.src = "soldier.mp4";
+video.loop = true;
+video.muted = true;
+video.playsInline = true;
 
 const BUMP_MAPPING = 0, NORMAL_MAPPING = 1;
 const objects = [
@@ -283,7 +291,7 @@ function render(time) {
     gl.uniform1i(uMapping, mapping);
     if(texture == animatedTexture){
       if(animatedTexture.readyState >= animatedTexture.HAVE_CURRENT_DATA){
-        loadVideoTexture(animatedTexture);
+        updateVideoTexture(animatedTexture);
       }
     } else {
       gl.bindTexture(gl.TEXTURE_2D, texture);
