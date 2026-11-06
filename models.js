@@ -150,7 +150,12 @@ function createSphere(uSteps, vSteps){
             const ty = -Math.sin(v);
             const tz = Math.cos(v);
 
+<<<<<<< HEAD
             tan.push(tx,ty,tz); 
+=======
+            tan.push(tx,ty,tz); // this isn't working for whatever reason
+            //Bump mapping works fine though
+>>>>>>> 9dbf2d18fe1fc3381483725780e9c19c8c4acfba
           
             const tu =(Math.atan2(y,x)/(2*Math.PI)) + 0.5;
             const tv = (Math.asin(z)/Math.PI) + 0.5;
