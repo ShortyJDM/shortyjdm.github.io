@@ -146,9 +146,9 @@ function createSphere(uSteps, vSteps){
             pos.push(x, y, z);
             nrm.push(x, y, z);
 
-            const tx = -Math.sin(u);
-            const ty = 0;
-            const tz = Math.cos(u);
+            const tx = Math.cos(v);
+            const ty = -Math.sin(v);
+            const tz = Math.cos(v);
 
             tan.push(tx,ty,tz);
           
@@ -219,6 +219,7 @@ function createCone(r, h, uSteps, vSteps){
     
     pos.push(0,0,0);
     nrm.push(0,0,1);
+    tan.push(1,0,0)
 
 
     for (let i = 0; i <= uSteps; i++){
