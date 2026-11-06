@@ -38,7 +38,8 @@ function createCylinder(segments = 64, uRepeat = 3) {
     for (const y of [-1, 1]) {
       positions.push(s, y, c);
       normals.push(s, 0, c);
-      tangents.push(c, 0, -s);
+      //tangents.push(c, 0, -s);
+      tangents.push(0,1,0);
       texCoords.push(u * uRepeat, (y + 1) / 2);
     }
   }
@@ -98,6 +99,11 @@ function createTorus(r, R ,uSteps, vSteps){
 
             pos.push(x, y, z);
             nrm.push(xn,yn,zn);
+
+            const tu = j/uSteps;
+            const tv = i/vSteps;
+
+            tex.push(tu,tv);
         }
     }
 
@@ -134,6 +140,11 @@ function createSphere(uSteps, vSteps){
             const z = Math.sin(u) * Math.sin(v);
             pos.push(x, y, z);
             nrm.push(x, y, z);
+
+            const tu =(Math.atan2(y,x)/ (2*Math.PI)) + 0.5;
+            const tv = (Math.asin(z)/Math.pi) + 0.5;
+
+            tex.push(tu,tv);
         }
     }
 
@@ -176,6 +187,11 @@ function createCone(r, h, uSteps, vSteps){
             
            
             nrm.push(nc*nx,nc*ny,nc*nz);
+
+            const tu = j/uSteps;
+            const tv = i/h;
+
+            tex.push(tu,tv);
         }
     }
     end = pos.length/3;
