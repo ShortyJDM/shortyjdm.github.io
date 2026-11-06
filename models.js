@@ -152,8 +152,8 @@ function createSphere(uSteps, vSteps){
 
             tan.push(tx,ty,tz); 
           
-            const tu =(Math.atan2(y,x)/(2*Math.PI)) + 0.5;
-            const tv = (Math.asin(z)/Math.PI) + 0.5;
+            const tu =(Math.atan2(y,x)/(2*Math.PI));
+            const tv = (Math.asin(z)/Math.PI);
 
             tex.push(tu,tv);
         }
