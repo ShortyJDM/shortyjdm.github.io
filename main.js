@@ -281,9 +281,10 @@ function render(time) {
   for (const { mesh, texture, mapping, offset } of objects) {
     gl.uniformMatrix4fv(uModelView, false, multiply(view, multiply(translate(...offset), rotation)));
     gl.uniform1i(uMapping, mapping);
-    gl.bindTexture(gl.TEXTURE_2D, texture);
     if(texture == animatedTexture && animatedTexture.readyState >= animatedTexture.HAVE_CURRENT_DATA){
       loadVideoTexture(animatedTexture);
+    } else {
+      gl.bindTexture(gl.TEXTURE_2D, texture);
     }
     gl.bindVertexArray(mesh.vao);
     gl.drawElements(gl.TRIANGLES, mesh.count, gl.UNSIGNED_SHORT, 0);
