@@ -92,11 +92,17 @@ function createTorus(r, R ,uSteps, vSteps){
             const y = (R + r*Math.cos(v)) * Math.sin(u);
             const z = r * Math.sin(v);
 
+            const xt = -Math.sin(u);
+            const yt =  Math.cos(u);
+            const zt = 0;
+
             const xn = Math.cos(v) * Math.cos(u);
             const yn = Math.cos(v) * Math.sin(u);
             const zn = Math.sin(v);
 
             pos.push(x, y, z);
+            tan.push(xt,yt,zt);
+
             nrm.push(xn,yn,zn);
 
             const tu = j/uSteps;
@@ -140,6 +146,12 @@ function createSphere(uSteps, vSteps){
             pos.push(x, y, z);
             nrm.push(x, y, z);
 
+            const tx = -Math.sin(u);
+            const ty = 0;
+            const tz = Math.cos(u);
+
+            tan.push(tx,ty,tz);
+          
             const tu =(Math.atan2(y,x)/ (2*Math.PI)) + 0.5;
             const tv = (Math.asin(z)/Math.pi) + 0.5;
 
@@ -183,6 +195,8 @@ function createCone(r, h, uSteps, vSteps){
             const ny = h * Math.sin(u);
             const nz = r;
             const nc = r*(1-v);
+
+            tan.push(-r*v,-r*v,h);
             
            
             nrm.push(nc*nx,nc*ny,nc*nz);
