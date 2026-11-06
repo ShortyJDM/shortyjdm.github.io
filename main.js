@@ -187,8 +187,28 @@ function loadTexture(url) {
   return texture;
 }
 
+function loadVideoTexture(video) {
+  const texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([128, 128, 255, 255]));
+
+  image.onload = () => {
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);  // images start at the top row, texture coordinates at the bottom
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+  };
+
+  return texture;
+}
+
 const brickTexture = loadTexture("brick.png");
 const normalTexture = loadTexture("texture2.jpg");
+const animatedTexture = document.createElement('video');
+animatedTexture.src = "soldier.gif";
+animatedTexture.loop = true;
+animatedTexture.muted = true;
 
 const BUMP_MAPPING = 0, NORMAL_MAPPING = 1;
 const objects = [
@@ -262,6 +282,9 @@ function render(time) {
     gl.uniformMatrix4fv(uModelView, false, multiply(view, multiply(translate(...offset), rotation)));
     gl.uniform1i(uMapping, mapping);
     gl.bindTexture(gl.TEXTURE_2D, texture);
+    if(texture == animatedTexture && animatedTexture.readyState >= animatedTexture.HAVE_CURRENT_DATA){
+      loadVideoTexture(animatedTexture);
+    }
     gl.bindVertexArray(mesh.vao);
     gl.drawElements(gl.TRIANGLES, mesh.count, gl.UNSIGNED_SHORT, 0);
   }

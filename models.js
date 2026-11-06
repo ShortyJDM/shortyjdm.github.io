@@ -152,9 +152,11 @@ function createSphere(uSteps, vSteps){
 
             tan.push(tx,ty,tz); 
           
+            //This doesnt work for whatever reason?
             //const tu =(Math.atan2(y,x)/(2*Math.PI)) + 0.5;
             //const tv = (Math.asin(z)/Math.PI) + 0.5;
 
+            //simpler mapping. works fine
             const tu = j / uSteps
             const tv = 1 - (i / vSteps)
 
