@@ -219,6 +219,7 @@ video.src = "soldier.mp4";
 video.loop = true;
 video.muted = true;
 video.playsInline = true;
+video.play();
 
 const BUMP_MAPPING = 0, NORMAL_MAPPING = 1;
 const objects = [
