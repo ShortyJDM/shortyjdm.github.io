@@ -167,8 +167,8 @@ const cubeMesh = createMesh(createCube());
 const cylinderMesh = createMesh(createCylinder());
 //const coneMesh = createMesh(createCylinder());
 const coneMesh = createMesh(createCone(1,3,10,10));
-const torusMesh = createMesh(createSphere(10,10));
-const sphereMesh = createMesh(createTorus(2,.5,10,10));
+const sphereMesh = createMesh(createSphere(10,10));
+const torusMesh = createMesh(createTorus(2,.5,10,10));
 
 function loadTexture(url) {
   const texture = gl.createTexture();
