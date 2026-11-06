@@ -38,8 +38,7 @@ function createCylinder(segments = 64, uRepeat = 3) {
     for (const y of [-1, 1]) {
       positions.push(s, y, c);
       normals.push(s, 0, c);
-      //tangents.push(c, 0, -s);
-      tangents.push(0,1,0);
+      tangents.push(c, 0, -s);
       texCoords.push(u * uRepeat, (y + 1) / 2);
     }
   }
