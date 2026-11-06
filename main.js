@@ -168,7 +168,7 @@ const cylinderMesh = createMesh(createCylinder());
 //const coneMesh = createMesh(createCylinder());
 const coneMesh = createMesh(createCone(1,3,10,10));
 const sphereMesh = createMesh(createSphere(10,10));
-const torusMesh = createMesh(createTorus(2,.5,10,10));
+const torusMesh = createMesh(createTorus(.5,2,15,15));
 
 function loadTexture(url) {
   const texture = gl.createTexture();
@@ -194,9 +194,9 @@ const BUMP_MAPPING = 0, NORMAL_MAPPING = 1;
 const objects = [
   { mesh: cubeMesh, texture: brickTexture, mapping: BUMP_MAPPING, offset: [-1.8, 0, 0] },
   { mesh: cylinderMesh, texture: normalTexture, mapping: NORMAL_MAPPING, offset: [1.8, 0, 0] },
-  { mesh: coneMesh, texture: brickTexture, mapping: BUMP_MAPPING, offset: [0, 4, 0] },
-  { mesh: torusMesh, texture: brickTexture, mapping: BUMP_MAPPING, offset: [3.6, 4, 0] },
-  { mesh: sphereMesh, texture: normalTexture, mapping: NORMAL_MAPPING, offset: [-3.6, 4, 0] }
+  { mesh: coneMesh, texture: normalTexture, mapping: NORMAL_MAPPING, offset: [0, 4, 0] },
+  { mesh: torusMesh, texture: normalTexture, mapping: NORMAL_MAPPING, offset: [3.6, 4, 0] },
+  { mesh: sphereMesh, texture: brickTexture, mapping: BUMP_MAPPING, offset: [-3.6, 4, 0] }
 ];
 
 gl.enable(gl.DEPTH_TEST);
