@@ -220,7 +220,7 @@ function createCone(r, h, uSteps, vSteps){
     pos.push(0,0,0);
     nrm.push(0,0,1);
     tan.push(1,0,0);
-    texCoords.push(0.5, 0.5);
+    tex.push(0.5, 0.5);
 
 
     for (let i = 0; i <= uSteps; i++){
