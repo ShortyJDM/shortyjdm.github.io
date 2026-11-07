@@ -293,7 +293,7 @@ function render(time) {
     gl.uniformMatrix4fv(uModelView, false, multiply(view, multiply(translate(...offset), rotation)));
     gl.uniform1i(uMapping, mapping);
     if(texture == animatedTexture){
-      if(animatedTexture.readyState >= animatedTexture.HAVE_CURRENT_DATA){
+      if(video.readyState >= video.HAVE_CURRENT_DATA){
         updateVideoTexture(animatedTexture);
       }
     } else {
