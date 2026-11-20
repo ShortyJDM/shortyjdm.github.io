@@ -58,6 +58,16 @@
           <input type="range" id="ambient" min="0" max="1" step="0.05" value="0.05">
           <span id="ambientValue">0.5</span>
         </div>
+        <div class="control-row">
+          <label for="refAir">Reflective index Air:</label>
+          <input type="range" id="refAir" min="0" max="3" step="0.05" value="1">
+          <span id="refAirValue">1</span>
+        </div>
+        <div class="control-row">
+          <label for="refGlass">Reflective index Glass:</label>
+          <input type="range" id="refGlass" min="0" max="3" step="0.05" value="1.5">
+          <span id="refGlassValue">1</span>
+        </div>
       </div>
     </div>
   </div>
@@ -77,13 +87,15 @@ uniform vec2 u_resolution;
 uniform int u_maxBounces;
 uniform float u_ambientStrength; //Ambient fill light for better visual
 uniform vec2 u_cameraOrbit;
+uniform float u_glassIOR;  // refractive index of the glass sphere
+uniform float u_airIOR;
 
 out vec4 fragColor;
 
 const float LIGHT_POWER = 3.0;
 const float FLOOR_Y = -2.0;
 const float CHECKER_SIZE = 3.0;
-const float GLASS_IOR = 1.5;  // refractive index of the glass sphere
+
 
 struct Ray {
     vec3 origin;
@@ -117,6 +129,7 @@ struct HitData {
 const Sphere lightSphere = Sphere(vec3(4.0, 3.0, -4.0), 0.3, vec3(1.0, 1.0, 0.9));
 Sphere sphere;
 Sphere glassSphere;
+Sphere mLightSphere;
 Cube cube;
 
 void initScene(float time) {
@@ -125,6 +138,12 @@ void initScene(float time) {
 
     float b = time * 0.3;
     cube = Cube(vec3(sin(b) * 2.0, cos(b * 1.5) + 0.5, -9.0 + cos(b * 0.7)), 0.8, vec3(0.3, 0.8, 0.3), 0.85);
+
+    float c = time * 0.15;
+    glassSphere = Sphere(vec3(cos(c) * 2.5, sin(c * 1.3) * 0.8, -3.0 + sin(c) * 0.5), 1.0, vec3(0.0, 0.0, 0.0));
+
+    float d = time * 0.75;
+    mLightSphere = Sphere(vec3(4.0*cos(d), 3.0, -4.0*sin(d)), 0.3, vec3(0.8, 0.8, 0.9));
 }
 
 bool intersectSphere(Ray ray, Sphere s, out float t) {
@@ -160,14 +179,20 @@ bool intersectCube(Ray ray, out float t, out vec3 normal) {
 }
 
 //eta = n1 / n2
-//vec3 refraction(vec3 I, vec3 N, float eta) {
-//    <!-- insert your code here -->
-//}
+vec3 refraction(vec3 I, vec3 N, float eta) {
+  return refract(I,N,eta);
+}
 
 // Schlick approximation
-//float schlick(float cosine, float ref_idx) {
-//    <!-- insert your code here -->
-//}
+float schlick(float cosine, float refI, float refT) {
+  float F0 = pow((refI-refT)/(refI+refT),2.0f);
+  float F = F0 + (1.0f - F0)*pow(1.0f - cosine,5.0f);
+  if(F > 1.0){
+    return 1.0;
+  } else {
+    return F;
+  }
+}
 
 bool intersectFloor(Ray ray, out float t) {
     if (abs(ray.direction.y) < 0.0001) return false;
@@ -186,6 +211,10 @@ HitData traceScene(Ray ray, bool includeLight) {
         hit = HitData(true, t, ray.origin + ray.direction * t, vec3(0.0), lightSphere.color, 0.0, true, false);
     }
 
+    if (includeLight && intersectSphere(ray, mLightSphere, t) && t < hit.t) {
+        hit = HitData(true, t, ray.origin + ray.direction * t, vec3(0.0), mLightSphere.color, 0.0, true, false);
+    }
+
     if (intersectFloor(ray, t) && t < hit.t) {
         vec3 p = ray.origin + ray.direction * t;
         vec2 cell = floor(p.xz / CHECKER_SIZE);
@@ -200,6 +229,11 @@ HitData traceScene(Ray ray, bool includeLight) {
     if (intersectSphere(ray, sphere, t) && t < hit.t) {
         vec3 p = ray.origin + ray.direction * t;
         hit = HitData(true, t, p, (p - sphere.center) / sphere.radius, sphere.color, 0.0, false, false);
+    }
+
+    if (intersectSphere(ray, glassSphere, t) && t < hit.t) {
+        vec3 p = ray.origin + ray.direction * t;
+        hit = HitData(true, t, p, (p - sphere.center) / sphere.radius, glassSphere.color, 0.0, false, true);
     }
 
     return hit;
@@ -224,26 +258,24 @@ vec3 trace(Ray ray) {
             break;
         }
 
-        // Refraction: (option 1)either reflects or refracts the ray, whichever Schlick says is stronger
-        // (option 2): finalColor = hit.color * (F * reflectionColor + (1.0 - F) * refractionColor)
-        // (option 3): Monte Carlo Sampling (multiple rays per pixel), reflect with probability F (random() < schlick_value), else refract, and average many samples per pixel
-        //<!-- if (hit.isGlass) {
-        //    <!-- insert your code here -->
+        if (hit.isGlass) {
+          //Assuming both are normal vectors
+          float cosI = dot(ray.direction,hit.normal);
+          float schlick_value = schlick(cosI,u_airIOR,u_glassIOR);
+          vec3 direction;
+          if (schlick_value > 0.5) {
+            color += attenuation * hit.color;
+            direction = reflect(ray.direction,hit.normal);
+          } else {
+            direction = refract(ray.direction,hit.normal,u_airIOR/u_glassIOR);
+          }
 
-        //    vec3 direction;
-        //    if (total_internal_reflection || schlick_value > 0.5) {
-                //direction = reflection ray
-        //        <!-- insert your code here -->
-        //    } else {
-                //direction = refraction ray
-        //        <!-- insert your code here -->
-        //    }
+          ray = Ray(hit.point + direction * 0.001, direction);
+          //Use Schlick approximation to determine contributions from reflection and refraction
+          //attenuation *= hit.color;
 
-        //    ray = Ray(hit.point + direction * 0.001, direction);
-        ////Use Schlick approximation to determine contributions from reflection and refraction
-        //    attenuation *= hit.color;
-        //    continue;
-        //}
+          continue;
+        }
 
         vec3 toLight = lightSphere.center - hit.point;
         float lightDist = length(toLight);
@@ -336,7 +368,9 @@ void main() {
 
   const bounces = document.getElementById("bounces");
   const ambient = document.getElementById("ambient");
-  for (const slider of [bounces, ambient]) {
+  const airIOR = document.getElementById("refAir");
+  const glassIOR = document.getElementById("refGlass");
+  for (const slider of [bounces, ambient,airIOR,glassIOR]) {
     slider.addEventListener("input", () => document.getElementById(slider.id + "Value").textContent = slider.value);
   }
 
@@ -359,6 +393,8 @@ void main() {
     gl.uniform1i(uniform("u_maxBounces"), bounces.value);
     gl.uniform1f(uniform("u_ambientStrength"), ambient.value);
     gl.uniform2f(uniform("u_cameraOrbit"), pitch, yaw);
+    gl.uniform1f(uniform("u_airIOR"),airIOR.value);
+    gl.uniform1f(uniform("u_glassIOR"),glassIOR.value);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
   requestAnimationFrame(render);
